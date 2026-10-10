@@ -1,0 +1,318 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#100709">
+<title>Halloween | El Taconazo 🎃</title>
+
+<style>
+* {
+  box-sizing: border-box;
+}
+
+:root {
+  --orange: #ff7518;
+  --gold: #ffc15a;
+  --dark: #100709;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: Arial, sans-serif;
+  color: #fff4e9;
+  background: radial-gradient(ellipse at center, #42101a, #100709 75%);
+}
+
+.screen {
+  min-height: 100vh;
+  min-height: 100svh;
+  padding: 25px 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.brand {
+  position: absolute;
+  top: 25px;
+  font-weight: 900;
+  letter-spacing: 4px;
+  color: var(--gold);
+}
+
+.pumpkin {
+  font-size: clamp(70px, 15vw, 120px);
+  animation: float 3s ease-in-out infinite;
+}
+
+h1, h2 {
+  font-size: clamp(36px, 8vw, 76px);
+  line-height: 1.05;
+  letter-spacing: -2px;
+  margin: 20px 0;
+}
+
+h1 span, h2 span {
+  color: var(--orange);
+}
+
+p {
+  color: #e8c9bd;
+  font-size: 18px;
+  line-height: 1.6;
+}
+
+.buttons {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 14px;
+  margin-top: 20px;
+}
+
+button {
+  border: 1px solid #ffffff30;
+  border-radius: 12px;
+  padding: 15px 30px;
+  min-width: 125px;
+  font-size: 17px;
+  font-weight: 900;
+  cursor: pointer;
+  transition: transform .2s;
+}
+
+button:hover {
+  transform: translateY(-3px);
+}
+
+.yes {
+  background: linear-gradient(135deg, #ffbd4a, #ff6d17);
+  color: #260b02;
+}
+
+.no {
+  background: #29141a;
+  color: white;
+}
+
+.small {
+  margin-top: 25px;
+  font-size: 12px;
+  color: #a98b8c;
+}
+
+#videoScreen {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 10;
+  background: black;
+  align-items: center;
+  justify-content: center;
+}
+
+#videoScreen.active {
+  display: flex;
+}
+
+#scareVideo {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  background: black;
+}
+
+#playFallback {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 90%;
+  text-align: center;
+}
+
+#afterScreen {
+  display: none;
+}
+
+#afterScreen.active {
+  display: flex;
+}
+
+.hidden {
+  display: none !important;
+}
+
+footer {
+  position: fixed;
+  bottom: 10px;
+  width: 100%;
+  text-align: center;
+  color: #85686d;
+  font-size: 12px;
+  pointer-events: none;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0) rotate(-3deg); }
+  50% { transform: translateY(-12px) rotate(3deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation: none;
+    transition: none;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<main id="landing" class="screen">
+  <div class="brand">EL TACONAZO 🌮</div>
+
+  <div class="pumpkin">🎃</div>
+
+  <h1>
+    ¿Celebrarías Halloween<br>
+    en <span>El Taconazo</span>?
+  </h1>
+
+  <p>Tenemos una preguntita para ti… 👀</p>
+
+  <div class="buttons">
+    <button class="yes" id="yesInvite">¡SÍ! 🎃</button>
+    <button class="no" id="noInvite">NO 😈</button>
+  </div>
+
+  <div class="small">UNA INVITACIÓN DE MIEDO… 🌮👻</div>
+</main>
+
+<section id="videoScreen">
+  <video id="scareVideo" playsinline preload="auto">
+    <!-- EL VIDEO ESTÁ EN EL MISMO LUGAR QUE ESTE HTML -->
+    <source src="screamer.mp4" type="video/mp4">
+    Tu navegador no puede reproducir este vídeo.
+  </video>
+
+  <div id="playFallback" class="hidden">
+    <p>Toca para reproducir el vídeo.</p>
+    <button class="yes" id="playButton">REPRODUCIR</button>
+  </div>
+</section>
+
+<section id="afterScreen" class="screen">
+  <div class="pumpkin">👀</div>
+
+  <h2>¿Te <span>asustaste?</span></h2>
+
+  <p>A ver, a ver… ¿sí o no? 😏</p>
+
+  <div class="buttons">
+    <button class="yes" id="yesScared">SÍ 😂</button>
+    <button class="no" id="noScared">NO 😎</button>
+  </div>
+</section>
+
+<footer>© El Taconazo · Halloween 🎃</footer>
+
+<script>
+const WHATSAPP_NUMBER = "524361082946";
+
+const WHATSAPP_TEXT =
+  "No manches Taconazo, me asustaste, ocupo unos tacos para calmarla 😂🌮";
+
+const landing = document.getElementById("landing");
+const videoScreen = document.getElementById("videoScreen");
+const afterScreen = document.getElementById("afterScreen");
+const video = document.getElementById("scareVideo");
+const fallback = document.getElementById("playFallback");
+
+let alreadyEnded = false;
+
+// CUALQUIERA DE LAS DOS OPCIONES INICIA EL VIDEO
+async function startScreamer() {
+  alreadyEnded = false;
+
+  landing.classList.add("hidden");
+  afterScreen.classList.remove("active");
+  videoScreen.classList.add("active");
+  fallback.classList.add("hidden");
+
+  video.currentTime = 0;
+
+  try {
+    if (videoScreen.requestFullscreen) {
+      try {
+        await videoScreen.requestFullscreen();
+      } catch (error) {}
+    }
+
+    await video.play();
+  } catch (error) {
+    fallback.classList.remove("hidden");
+  }
+}
+
+// CUANDO TERMINA EL VIDEO, MOSTRAR LA SEGUNDA PREGUNTA
+function finishScreamer() {
+  if (alreadyEnded) return;
+  alreadyEnded = true;
+
+  video.pause();
+  videoScreen.classList.remove("active");
+
+  if (document.fullscreenElement && document.exitFullscreen) {
+    document.exitFullscreen().catch(() => {});
+  }
+
+  afterScreen.classList.add("active");
+}
+
+// ABRIR WHATSAPP CON EL MENSAJE ESCRITO
+function openWhatsApp() {
+  const url =
+    "https://wa.me/" +
+    WHATSAPP_NUMBER +
+    "?text=" +
+    encodeURIComponent(WHATSAPP_TEXT);
+
+  window.location.href = url;
+}
+
+document.getElementById("yesInvite")
+  .addEventListener("click", startScreamer);
+
+document.getElementById("noInvite")
+  .addEventListener("click", startScreamer);
+
+document.getElementById("playButton")
+  .addEventListener("click", () => {
+    fallback.classList.add("hidden");
+
+    video.play().catch(() => {
+      fallback.classList.remove("hidden");
+    });
+  });
+
+video.addEventListener("ended", finishScreamer);
+
+video.addEventListener("error", () => {
+  fallback.classList.remove("hidden");
+});
+
+document.getElementById("yesScared")
+  .addEventListener("click", openWhatsApp);
+
+document.getElementById("noScared")
+  .addEventListener("click", openWhatsApp);
+</script>
+
+</body>
+</html>
